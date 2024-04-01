@@ -16,6 +16,10 @@
 		D1E152492BBA44F200795B7B /* RHMediaSelectionViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E152482BBA44F200795B7B /* RHMediaSelectionViewTests.swift */; };
 		D1E152532BBA44F200795B7B /* RHMediaSelectionViewUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E152522BBA44F200795B7B /* RHMediaSelectionViewUITests.swift */; };
 		D1E152552BBA44F200795B7B /* RHMediaSelectionViewUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E152542BBA44F200795B7B /* RHMediaSelectionViewUITestsLaunchTests.swift */; };
+		D1E152622BBA452C00795B7B /* SelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E152612BBA452C00795B7B /* SelectionViewController.swift */; };
+		D1E152652BBA47A800795B7B /* RHInterface in Frameworks */ = {isa = PBXBuildFile; productRef = D1E152642BBA47A800795B7B /* RHInterface */; };
+		D1E152682BBA47C200795B7B /* RHNetworkAPI in Frameworks */ = {isa = PBXBuildFile; productRef = D1E152672BBA47C200795B7B /* RHNetworkAPI */; };
+		D1E1526B2BBA47E100795B7B /* RHUIComponent in Frameworks */ = {isa = PBXBuildFile; productRef = D1E1526A2BBA47E100795B7B /* RHUIComponent */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +53,7 @@
 		D1E1524E2BBA44F200795B7B /* RHMediaSelectionViewUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RHMediaSelectionViewUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1E152522BBA44F200795B7B /* RHMediaSelectionViewUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RHMediaSelectionViewUITests.swift; sourceTree = "<group>"; };
 		D1E152542BBA44F200795B7B /* RHMediaSelectionViewUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RHMediaSelectionViewUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		D1E152612BBA452C00795B7B /* SelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +61,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D1E152682BBA47C200795B7B /* RHNetworkAPI in Frameworks */,
+				D1E1526B2BBA47E100795B7B /* RHUIComponent in Frameworks */,
+				D1E152652BBA47A800795B7B /* RHInterface in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,6 +110,7 @@
 				D1E152312BBA44F100795B7B /* AppDelegate.swift */,
 				D1E152332BBA44F100795B7B /* SceneDelegate.swift */,
 				D1E152352BBA44F100795B7B /* ViewController.swift */,
+				D1E152612BBA452C00795B7B /* SelectionViewController.swift */,
 				D1E152372BBA44F100795B7B /* Main.storyboard */,
 				D1E1523A2BBA44F200795B7B /* Assets.xcassets */,
 				D1E1523C2BBA44F200795B7B /* LaunchScreen.storyboard */,
@@ -143,6 +152,11 @@
 			dependencies = (
 			);
 			name = RHMediaSelectionView;
+			packageProductDependencies = (
+				D1E152642BBA47A800795B7B /* RHInterface */,
+				D1E152672BBA47C200795B7B /* RHNetworkAPI */,
+				D1E1526A2BBA47E100795B7B /* RHUIComponent */,
+			);
 			productName = RHMediaSelectionView;
 			productReference = D1E1522E2BBA44F100795B7B /* RHMediaSelectionView.app */;
 			productType = "com.apple.product-type.application";
@@ -215,6 +229,11 @@
 				Base,
 			);
 			mainGroup = D1E152252BBA44F100795B7B;
+			packageReferences = (
+				D1E152632BBA47A800795B7B /* XCRemoteSwiftPackageReference "RHInterface" */,
+				D1E152662BBA47C200795B7B /* XCRemoteSwiftPackageReference "RHNetworkAPI" */,
+				D1E152692BBA47E100795B7B /* XCRemoteSwiftPackageReference "RHUIComponent" */,
+			);
 			productRefGroup = D1E1522F2BBA44F100795B7B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -259,6 +278,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D1E152362BBA44F100795B7B /* ViewController.swift in Sources */,
+				D1E152622BBA452C00795B7B /* SelectionViewController.swift in Sources */,
 				D1E152322BBA44F100795B7B /* AppDelegate.swift in Sources */,
 				D1E152342BBA44F100795B7B /* SceneDelegate.swift in Sources */,
 			);
@@ -607,6 +627,51 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D1E152632BBA47A800795B7B /* XCRemoteSwiftPackageReference "RHInterface" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/HsinChungHan/RHInterface.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		D1E152662BBA47C200795B7B /* XCRemoteSwiftPackageReference "RHNetworkAPI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/HsinChungHan/RHNetworkAPI.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		D1E152692BBA47E100795B7B /* XCRemoteSwiftPackageReference "RHUIComponent" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/HsinChungHan/RHUIComponent.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D1E152642BBA47A800795B7B /* RHInterface */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D1E152632BBA47A800795B7B /* XCRemoteSwiftPackageReference "RHInterface" */;
+			productName = RHInterface;
+		};
+		D1E152672BBA47C200795B7B /* RHNetworkAPI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D1E152662BBA47C200795B7B /* XCRemoteSwiftPackageReference "RHNetworkAPI" */;
+			productName = RHNetworkAPI;
+		};
+		D1E1526A2BBA47E100795B7B /* RHUIComponent */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D1E152692BBA47E100795B7B /* XCRemoteSwiftPackageReference "RHUIComponent" */;
+			productName = RHUIComponent;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = D1E152262BBA44F100795B7B /* Project object */;
 }
