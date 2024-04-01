@@ -81,7 +81,6 @@ private extension SelectionViewController {
             self.view.addSubview(indicator)
             activityIndicator = indicator
         }
-        
         activityIndicator?.startAnimating()
     }
     
@@ -96,12 +95,12 @@ extension SelectionViewController: UICollectionViewDataSource {
         return 9
     }
     
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CellID", for: indexPath) as! SelectionViewCell
         cell.backgroundColor = Color.Blue.v500
-        if viewModel.selectedImagesCount - 1 >= indexPath.row {
-            cell.imageView.image = viewModel.selectionCellModels[indexPath.row].photo
-        }
+        cell.setupImage(with: viewModel.selectionCellModels[indexPath.row].photo)
+        cell.delegate = self
         return cell
     }
 }
@@ -189,5 +188,18 @@ extension SelectionViewController: SelectionViewViewModelDelegate {
     func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, shouldReloadImageAtIndex index: Int) {
         let indexPath = IndexPath(row: index, section: 0)
         collectionView.reloadItems(at: [indexPath])
+    }
+}
+
+extension SelectionViewController: SelectionViewCellDelegate {
+    func selectionViewCell(_ selectionViewCell: SelectionViewCell, didTapRemoveButton button: UIButton) {
+        guard let indexPath = collectionView.indexPath(for: selectionViewCell) else { return }
+        viewModel.selectionCellModels[indexPath.row].photo = nil
+        collectionView.reloadItems(at: [indexPath])
+        
+        let item = viewModel.selectionCellModels.remove(at: indexPath.row)
+        viewModel.selectionCellModels.append(item)
+//        viewModel.selectionCellModels.insert(item, at: viewModel.selectionCellModels.count - 1)
+        collectionView.moveItem(at: indexPath, to: IndexPath.init(row: viewModel.selectionCellModels.count - 1, section: 0))
     }
 }

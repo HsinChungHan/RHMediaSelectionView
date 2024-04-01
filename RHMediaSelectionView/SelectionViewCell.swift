@@ -14,9 +14,25 @@ protocol SelectionViewCellDelegate: AnyObject {
 }
 
 class SelectionViewCell: UICollectionViewCell {
+    enum Status {
+        case noSelectionPhoto
+        case haveSelectionPhoto
+        case uploadSelectionPhoto
+    }
+    
     weak var delegate: SelectionViewCellDelegate?
     lazy var imageView = makeImageView()
     lazy var removeButton = makeRemoveButton()
+    var status = Status.noSelectionPhoto {
+        didSet {
+            switch status {
+            case .haveSelectionPhoto, .uploadSelectionPhoto:
+                removeButton.isHidden = false
+            case .noSelectionPhoto:
+                removeButton.isHidden = true
+            }
+        }
+    }
     
     override func draw(_ rect: CGRect) {
         super.draw(rect)
@@ -32,6 +48,18 @@ extension SelectionViewCell {
         removeButton.constraint(bottom: snp.bottom, trailing: snp.trailing, padding: .init(top: 0, left: 0, bottom: 4, right: 4), size: .init(width: 24, height: 24))
         removeButton.layer.cornerRadius = 24 / 2
         removeButton.clipsToBounds = true
+    }
+}
+
+extension SelectionViewCell {
+    func setupImage(with image: UIImage?) {
+        guard let image else {
+            status = .noSelectionPhoto
+            imageView.image = nil
+            return
+        }
+        status = .haveSelectionPhoto
+        imageView.image = image
     }
 }
 
