@@ -22,8 +22,6 @@ enum PhotoPickerManagerUseCaseError {
 class PhotoPickerManagerUseCase {
     weak var delegate: PhotoPickerManagerUseCaseDelegate?
     
-    var loadCompletedCounter = 0
-    
     func presentPhotoPicker(with selectionLimit: Int) {
         var configuration = PHPickerConfiguration()
         configuration.selectionLimit = selectionLimit
@@ -39,6 +37,7 @@ class PhotoPickerManagerUseCase {
 extension PhotoPickerManagerUseCase:
     PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        var loadCompletedCounter = 0
         picker.dismiss(animated: true, completion: nil)
         
         if results.isEmpty {
@@ -53,8 +52,9 @@ extension PhotoPickerManagerUseCase:
             if itemProvider.canLoadObject(ofClass: UIImage.self) {
                 itemProvider.loadObject(ofClass: UIImage.self) { [weak self] (imageObj, error) in
                     guard let self else { return }
+                    loadCompletedCounter += 1
                     DispatchQueue.main.async {
-                        self.loadCompletedCounter += 1
+                        
                         if let _ = error {
                             self.delegate?.photoPickerManager(self, didOccurWithError: .failedLoadPhoto)
                             return
@@ -64,7 +64,8 @@ extension PhotoPickerManagerUseCase:
                             return
                         }
                         
-                        self.delegate?.photoPickerManager(self, didLoadImage: image, isFinishLoading: results.count == self.loadCompletedCounter)
+                        let isFinishLoading = results.count == loadCompletedCounter
+                        self.delegate?.photoPickerManager(self, didLoadImage: image, isFinishLoading: isFinishLoading)
                     }
                 }
             }

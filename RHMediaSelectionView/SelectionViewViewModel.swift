@@ -25,7 +25,6 @@ class SelectionViewViewModel {
     }
     
     lazy var photoPickerManagerUseCase = makePhotoPickerManagerUseCase()
-    
 }
 
 // MARK: - Internal

@@ -112,8 +112,13 @@ extension SelectionViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         // 開始更新數據模型
         let item = viewModel.selectedImages.remove(at: sourceIndexPath.item)
-        viewModel.selectedImages.insert(item, at: destinationIndexPath.item)
-        // 這裡你也可以更新後台數據或是持久層的數據
+        let targetIndex = min(destinationIndexPath.row, viewModel.selectedImages.count - 1)
+        viewModel.selectedImages.insert(item, at: targetIndex)
+        let shouldMoveCellToLastContinuousCellsIndex = destinationIndexPath.row > viewModel.selectedImages.count - 1
+        if shouldMoveCellToLastContinuousCellsIndex {
+            let visualDestinationIndexPath = IndexPath(item: viewModel.selectedImages.count - 1, section: destinationIndexPath.section)
+            collectionView.moveItem(at: destinationIndexPath, to: visualDestinationIndexPath)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
