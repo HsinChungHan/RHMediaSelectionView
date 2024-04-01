@@ -139,8 +139,8 @@ private extension SelectionViewController {
     }
     
     func makeLongPressGestureRecognizer() -> UILongPressGestureRecognizer {
-        let penGensture = UILongPressGestureRecognizer(target: self, action: #selector(didLongPressGestureRecognizer))
-        return penGensture
+        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(didLongPressGestureRecognizer))
+        return longPressGesture
     }
     
     @objc func didLongPressGestureRecognizer(gesture: UILongPressGestureRecognizer) {
@@ -151,11 +151,13 @@ private extension SelectionViewController {
                 break
             }
             collectionView.beginInteractiveMovementForItem(at: selectedIndexPath)
-            for cell in collectionView.visibleCells {
-                if collectionView.indexPath(for: cell) != selectedIndexPath {
-                    cell.layer.add(shakeAnimation(), forKey: "shake")
-                }
-            }
+            let cell = collectionView.cellForItem(at: selectedIndexPath)
+            cell?.layer.add(shakeAnimation(), forKey: "shake")
+//            for cell in collectionView.visibleCells {
+//                if collectionView.indexPath(for: cell) != selectedIndexPath {
+//                    cell.layer.add(shakeAnimation(), forKey: "shake")
+//                }
+//            }
         case .changed:
             collectionView.updateInteractiveMovementTargetPosition(gesture.location(in: gesture.view!))
         case .ended:
