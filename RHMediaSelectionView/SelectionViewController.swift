@@ -15,15 +15,18 @@ class SelectionViewController: UIViewController {
     
     lazy var collectionView = makeCollectionView()
     lazy var longPressGestureRecognizer = makeLongPressGestureRecognizer()
+    let viewModel = SelectionViewViewModel()
     
-    // 活動指示器
     private var activityIndicator: UIActivityIndicatorView?
     
-    // 儲存加載的照片
-    private var selectedImages: [UIImage] = []
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        
+    }
     
-    // 加載完成的計數器
-    private var loadCompletedCounter: Int = 0
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,10 +36,14 @@ class SelectionViewController: UIViewController {
         collectionView.addGestureRecognizer(longPressGestureRecognizer)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        viewModel.delegate = self
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         setCollectionViewLayout()
-        
     }
 }
 
@@ -67,31 +74,6 @@ private extension SelectionViewController {
         return animation
     }
     
-    func presentPhotoPicker() {
-        var configuration = PHPickerConfiguration()
-        configuration.selectionLimit = MAX_SELECTED_PHOTOS - selectedImages.count // 可以自訂選擇的數量
-        configuration.filter = .images // 只選擇圖片
-        
-        let picker = PHPickerViewController(configuration: configuration)
-        picker.delegate = self
-        self.present(picker, animated: true, completion: nil)
-    }
-    
-    private func handleLoadedImage(_ image: AnyObject?, from itemProvider: NSItemProvider, totalImagesCount: Int) {
-        if let image = image as? UIImage {
-            selectedImages.append(image)
-        }
-        
-        loadCompletedCounter += 1
-        
-        // 檢查是否所有圖片都已加載完成
-        if loadCompletedCounter == totalImagesCount {
-            hideActivityIndicator()
-            // 這裡可以更新UI顯示照片，例如刷新一個collectionView
-            collectionView.reloadData()
-        }
-    }
-    
     private func showActivityIndicator() {
         if activityIndicator == nil {
             let indicator = UIActivityIndicatorView(style: .large)
@@ -117,8 +99,8 @@ extension SelectionViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CellID", for: indexPath) as! SelectionViewCell
         cell.backgroundColor = Color.Blue.v500
-        if selectedImages.count - 1 >= indexPath.row {
-            cell.imageView.image = selectedImages[indexPath.row]
+        if viewModel.selectedImages.count - 1 >= indexPath.row {
+            cell.imageView.image = viewModel.selectedImages[indexPath.row]
         }
         
         return cell
@@ -129,46 +111,13 @@ extension SelectionViewController: UICollectionViewDataSource {
 extension SelectionViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         // 開始更新數據模型
-        let item = selectedImages.remove(at: sourceIndexPath.item)
-        selectedImages.insert(item, at: destinationIndexPath.item)
+        let item = viewModel.selectedImages.remove(at: sourceIndexPath.item)
+        viewModel.selectedImages.insert(item, at: destinationIndexPath.item)
         // 這裡你也可以更新後台數據或是持久層的數據
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        presentPhotoPicker()
-    }
-}
-
-// MARK: - PHPickerViewControllerDelegate
-extension SelectionViewController: 
-    PHPickerViewControllerDelegate {
-    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        picker.dismiss(animated: true, completion: nil)
-        
-        if results.isEmpty {
-            // 沒有選擇任何照片
-            return
-        }
-        
-        // 重置計數器和照片數組
-        loadCompletedCounter = 0
-        selectedImages.removeAll()
-        
-        // 顯示加載指示器
-        showActivityIndicator()
-        
-        // 处理多个选取结果
-        for result in results {
-            let itemProvider = result.itemProvider
-            
-            if itemProvider.canLoadObject(ofClass: UIImage.self) {
-                itemProvider.loadObject(ofClass: UIImage.self) { [weak self] (image, error) in
-                    DispatchQueue.main.async {
-                        self?.handleLoadedImage(image, from: itemProvider, totalImagesCount: results.count)
-                    }
-                }
-            }
-        }
+        viewModel.selectPhoto(atIndex: indexPath.row)
     }
 }
 
@@ -215,5 +164,24 @@ private extension SelectionViewController {
                 cell.layer.removeAnimation(forKey: "shake")
             }
         }
+    }
+}
+
+extension SelectionViewController: SelectionViewViewModelDelegate {
+    func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, shouldHideActivityIndicator: Bool) {
+        hideActivityIndicator()
+    }
+    
+    func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, shouldShowActivityIndicator: Bool) {
+        showActivityIndicator()
+    }
+    
+    func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, shouldPresentPikcer picker: PHPickerViewController) {
+        present(picker, animated: true)
+    }
+    
+    func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, shouldReloadImageAtIndex index: Int) {
+        let indexPath = IndexPath(row: index, section: 0)
+        collectionView.reloadItems(at: [indexPath])
     }
 }
