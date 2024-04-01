@@ -53,11 +53,12 @@ private extension SelectionViewController {
         if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             let itemsPerRow: CGFloat = 3
             let rowsPerSection: CGFloat = 3
+            
             let minimumItemSpacing: CGFloat = layout.minimumInteritemSpacing
             let paddingSpace = minimumItemSpacing * (itemsPerRow - 1)
             let availableWidth = collectionView.bounds.width - paddingSpace - layout.sectionInset.left - layout.sectionInset.right
             let widthPerItem = availableWidth / itemsPerRow
-            
+            print()
             let availableHeight = collectionView.bounds.height - paddingSpace - layout.sectionInset.top - layout.sectionInset.bottom
             let heightPerItem = availableHeight / rowsPerSection
             layout.itemSize = CGSize(width: widthPerItem, height: heightPerItem)
@@ -98,7 +99,6 @@ extension SelectionViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CellID", for: indexPath) as! SelectionViewCell
-        cell.backgroundColor = Color.Blue.v500
         cell.setupImage(with: viewModel.selectionCellModels[indexPath.row].photo)
         cell.delegate = self
         return cell

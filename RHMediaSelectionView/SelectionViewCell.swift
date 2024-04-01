@@ -44,8 +44,8 @@ extension SelectionViewCell {
     private func setupLayout() {
         contentView.addSubview(imageView)
         contentView.addSubview(removeButton)
-        imageView.fillSuperView()
-        removeButton.constraint(bottom: snp.bottom, trailing: snp.trailing, padding: .init(top: 0, left: 0, bottom: 4, right: 4), size: .init(width: 24, height: 24))
+        imageView.fillSuperView(inset: .init(top: 6, left: 6, bottom: 6, right: 6))
+        removeButton.constraint(bottom: snp.bottom, trailing: snp.trailing, size: .init(width: 24, height: 24))
         removeButton.layer.cornerRadius = 24 / 2
         removeButton.clipsToBounds = true
     }
@@ -55,7 +55,7 @@ extension SelectionViewCell {
     func setupImage(with image: UIImage?) {
         guard let image else {
             status = .noSelectionPhoto
-            imageView.image = nil
+            imageView.image = UIImage(named: "photo")
             return
         }
         status = .haveSelectionPhoto
@@ -68,13 +68,14 @@ private extension SelectionViewCell {
     func makeImageView() -> UIImageView {
         let view = UIImageView()
         view.contentMode = .scaleAspectFill
+        view.image = UIImage(named: "photo")
         view.clipsToBounds = true
         return view
     }
     
     func makeRemoveButton() -> UIButton {
         let view = UIButton(type: .system)
-        view.setImage(UIImage(named: "cancel")!, for: .normal)
+        view.setImage(UIImage(named: "cancel")!.withRenderingMode(.alwaysOriginal), for: .normal)
         view.imageView?.contentMode = .scaleAspectFit
         view.backgroundColor = Color.Red.v500
         view.addTarget(self, action: #selector(didTapSelectionButton), for: .touchUpInside)
