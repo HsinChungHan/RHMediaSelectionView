@@ -19,9 +19,12 @@ class SelectionViewViewModel {
     weak var delegate: SelectionViewViewModelDelegate?
     let MAX_SELECTION_LIMIT = 9
     var replacedIndex: Int? = nil
-    var selectedImages = [UIImage]()
+    var selectedImagesCount: Int {
+        selectionCellModels.compactMap { $0.photo }.count
+    }
+    var selectionCellModels = (1...9).map { _ in SelectionViewCellModel(photo: nil) }
     var allowedSelectionLimit: Int {
-        MAX_SELECTION_LIMIT - selectedImages.count
+        MAX_SELECTION_LIMIT - selectedImagesCount
     }
     
     lazy var photoPickerManagerUseCase = makePhotoPickerManagerUseCase()
@@ -30,7 +33,7 @@ class SelectionViewViewModel {
 // MARK: - Internal
 extension SelectionViewViewModel {
     func selectPhoto(atIndex index: Int) {
-        if index <= selectedImages.count - 1 {
+        if index <= selectedImagesCount - 1 {
             replacePhoto(atIndex: index)
             return
         }
@@ -72,11 +75,11 @@ extension SelectionViewViewModel: PhotoPickerManagerUseCaseDelegate {
         var shouldReloadImageAtIndex: Int
         if let replacedIndex {
             shouldReloadImageAtIndex = replacedIndex
-            selectedImages[replacedIndex] = image
+            selectionCellModels[replacedIndex].photo = image
             self.replacedIndex = nil
         } else {
-            selectedImages.append(image)
-            shouldReloadImageAtIndex = selectedImages.firstIndex(of: image)!
+            selectionCellModels[selectedImagesCount].photo = image
+            shouldReloadImageAtIndex = selectedImagesCount - 1
         }
         delegate?.selectionViewViewModel(self, shouldReloadImageAtIndex: shouldReloadImageAtIndex)
         

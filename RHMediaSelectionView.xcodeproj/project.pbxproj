@@ -23,6 +23,8 @@
 		D1E1526D2BBA56AE00795B7B /* SelectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E1526C2BBA56AE00795B7B /* SelectionViewCell.swift */; };
 		D1E1526F2BBA607B00795B7B /* SelectionViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E1526E2BBA607B00795B7B /* SelectionViewViewModel.swift */; };
 		D1E152712BBA60F700795B7B /* PhotoPickerUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E152702BBA60F700795B7B /* PhotoPickerUseCase.swift */; };
+		D1E152732BBA7E7E00795B7B /* UIImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E152722BBA7E7E00795B7B /* UIImage+Extension.swift */; };
+		D1E152752BBB0DD000795B7B /* SelectionViewCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E152742BBB0DD000795B7B /* SelectionViewCellModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +62,8 @@
 		D1E1526C2BBA56AE00795B7B /* SelectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionViewCell.swift; sourceTree = "<group>"; };
 		D1E1526E2BBA607B00795B7B /* SelectionViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionViewViewModel.swift; sourceTree = "<group>"; };
 		D1E152702BBA60F700795B7B /* PhotoPickerUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPickerUseCase.swift; sourceTree = "<group>"; };
+		D1E152722BBA7E7E00795B7B /* UIImage+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extension.swift"; sourceTree = "<group>"; };
+		D1E152742BBB0DD000795B7B /* SelectionViewCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionViewCellModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +124,8 @@
 				D1E1526E2BBA607B00795B7B /* SelectionViewViewModel.swift */,
 				D1E152702BBA60F700795B7B /* PhotoPickerUseCase.swift */,
 				D1E1526C2BBA56AE00795B7B /* SelectionViewCell.swift */,
+				D1E152742BBB0DD000795B7B /* SelectionViewCellModel.swift */,
+				D1E152722BBA7E7E00795B7B /* UIImage+Extension.swift */,
 				D1E152372BBA44F100795B7B /* Main.storyboard */,
 				D1E1523A2BBA44F200795B7B /* Assets.xcassets */,
 				D1E1523C2BBA44F200795B7B /* LaunchScreen.storyboard */,
@@ -289,7 +295,9 @@
 				D1E1526D2BBA56AE00795B7B /* SelectionViewCell.swift in Sources */,
 				D1E152362BBA44F100795B7B /* ViewController.swift in Sources */,
 				D1E152622BBA452C00795B7B /* SelectionViewController.swift in Sources */,
+				D1E152732BBA7E7E00795B7B /* UIImage+Extension.swift in Sources */,
 				D1E152322BBA44F100795B7B /* AppDelegate.swift in Sources */,
+				D1E152752BBB0DD000795B7B /* SelectionViewCellModel.swift in Sources */,
 				D1E152712BBA60F700795B7B /* PhotoPickerUseCase.swift in Sources */,
 				D1E1526F2BBA607B00795B7B /* SelectionViewViewModel.swift in Sources */,
 				D1E152342BBA44F100795B7B /* SceneDelegate.swift in Sources */,

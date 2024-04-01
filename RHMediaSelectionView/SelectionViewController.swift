@@ -99,10 +99,9 @@ extension SelectionViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CellID", for: indexPath) as! SelectionViewCell
         cell.backgroundColor = Color.Blue.v500
-        if viewModel.selectedImages.count - 1 >= indexPath.row {
-            cell.imageView.image = viewModel.selectedImages[indexPath.row]
+        if viewModel.selectedImagesCount - 1 >= indexPath.row {
+            cell.imageView.image = viewModel.selectionCellModels[indexPath.row].photo
         }
-        
         return cell
     }
 }
@@ -111,12 +110,12 @@ extension SelectionViewController: UICollectionViewDataSource {
 extension SelectionViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         // 開始更新數據模型
-        let item = viewModel.selectedImages.remove(at: sourceIndexPath.item)
-        let targetIndex = min(destinationIndexPath.row, viewModel.selectedImages.count - 1)
-        viewModel.selectedImages.insert(item, at: targetIndex)
-        let shouldMoveCellToLastContinuousCellsIndex = destinationIndexPath.row > viewModel.selectedImages.count - 1
+        let item = viewModel.selectionCellModels.remove(at: sourceIndexPath.item)
+        let targetIndex = min(destinationIndexPath.row, viewModel.selectedImagesCount - 1)
+        viewModel.selectionCellModels.insert(item, at: targetIndex)
+        let shouldMoveCellToLastContinuousCellsIndex = destinationIndexPath.row > viewModel.selectedImagesCount - 1
         if shouldMoveCellToLastContinuousCellsIndex {
-            let visualDestinationIndexPath = IndexPath(item: viewModel.selectedImages.count - 1, section: destinationIndexPath.section)
+            let visualDestinationIndexPath = IndexPath(item: viewModel.selectedImagesCount - 1, section: destinationIndexPath.section)
             collectionView.moveItem(at: destinationIndexPath, to: visualDestinationIndexPath)
         }
     }
