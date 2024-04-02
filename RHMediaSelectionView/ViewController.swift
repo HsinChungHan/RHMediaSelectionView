@@ -14,7 +14,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         view.addSubview(selectionView)
         addChild(selectionViewController)
-        selectionView.constraint(top: view.safeAreaLayoutGuide.snp.top, bottom: view.safeAreaLayoutGuide.snp.bottom, leading: view.snp.leading, trailing: view.snp.trailing, padding: .init(top: 0, left: 16, bottom: 0, right: 16))
+        selectionView.constraint(top: view.safeAreaLayoutGuide.snp.top, bottom: view.layoutMarginsGuide.snp.bottom, leading: view.snp.leading, trailing: view.snp.trailing, padding: .init(top: 16, left: 16, bottom: 16, right: 16))
     }
 }
 

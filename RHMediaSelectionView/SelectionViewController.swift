@@ -11,11 +11,11 @@ import PhotosUI
 import RHUIComponent
 
 class SelectionViewController: UIViewController {
-    let MAX_SELECTED_PHOTOS = 9
+    let maxSelectionLimit = 15
     
     lazy var collectionView = makeCollectionView()
     lazy var longPressGestureRecognizer = makeLongPressGestureRecognizer()
-    let viewModel = SelectionViewViewModel()
+    lazy var viewModel = SelectionViewViewModel.init(maxSelectionLimit: maxSelectionLimit)
     
     private var activityIndicator: UIActivityIndicatorView?
     
@@ -52,13 +52,11 @@ private extension SelectionViewController {
     func setCollectionViewLayout() {
         if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             let itemsPerRow: CGFloat = 3
-            let rowsPerSection: CGFloat = 3
-            
+            let rowsPerSection: CGFloat = 5
             let minimumItemSpacing: CGFloat = layout.minimumInteritemSpacing
             let paddingSpace = minimumItemSpacing * (itemsPerRow - 1)
             let availableWidth = collectionView.bounds.width - paddingSpace - layout.sectionInset.left - layout.sectionInset.right
             let widthPerItem = availableWidth / itemsPerRow
-            print()
             let availableHeight = collectionView.bounds.height - paddingSpace - layout.sectionInset.top - layout.sectionInset.bottom
             let heightPerItem = availableHeight / rowsPerSection
             layout.itemSize = CGSize(width: widthPerItem, height: heightPerItem)
@@ -93,7 +91,7 @@ private extension SelectionViewController {
 // MARK: - UICollectionViewDataSource
 extension SelectionViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 9
+        return maxSelectionLimit
     }
     
     
@@ -108,14 +106,10 @@ extension SelectionViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegate
 extension SelectionViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        // 開始更新數據模型
-        let item = viewModel.selectionCellModels.remove(at: sourceIndexPath.item)
-        let targetIndex = min(destinationIndexPath.row, viewModel.selectedImagesCount - 1)
-        viewModel.selectionCellModels.insert(item, at: targetIndex)
-        let shouldMoveCellToLastContinuousCellsIndex = destinationIndexPath.row > viewModel.selectedImagesCount - 1
-        if shouldMoveCellToLastContinuousCellsIndex {
-            let visualDestinationIndexPath = IndexPath(item: viewModel.selectedImagesCount - 1, section: destinationIndexPath.section)
-            collectionView.moveItem(at: destinationIndexPath, to: visualDestinationIndexPath)
+        viewModel.moveCell(at: sourceIndexPath, to: destinationIndexPath) { lastContunousImageCellIndexPath in
+            collectionView.moveItem(at: destinationIndexPath, to: lastContunousImageCellIndexPath)
+            print(viewModel.selectionCellModels.map { $0.uid })
+            print("====")
         }
     }
     
@@ -145,7 +139,11 @@ private extension SelectionViewController {
         switch(gesture.state) {
             
         case .began:
-            guard let selectedIndexPath = collectionView.indexPathForItem(at: gesture.location(in: collectionView)) else {
+            // 只有 photo 不為 nil 的 cell 才可以拖動
+            guard
+                let selectedIndexPath = collectionView.indexPathForItem(at: gesture.location(in: collectionView)),
+                let _ = viewModel.selectionCellModels[selectedIndexPath.row].photo
+            else {
                 break
             }
             collectionView.beginInteractiveMovementForItem(at: selectedIndexPath)
@@ -194,12 +192,14 @@ extension SelectionViewController: SelectionViewViewModelDelegate {
 extension SelectionViewController: SelectionViewCellDelegate {
     func selectionViewCell(_ selectionViewCell: SelectionViewCell, didTapRemoveButton button: UIButton) {
         guard let indexPath = collectionView.indexPath(for: selectionViewCell) else { return }
-        viewModel.selectionCellModels[indexPath.row].photo = nil
-        collectionView.reloadItems(at: [indexPath])
-        
-        let item = viewModel.selectionCellModels.remove(at: indexPath.row)
-        viewModel.selectionCellModels.append(item)
-//        viewModel.selectionCellModels.insert(item, at: viewModel.selectionCellModels.count - 1)
-        collectionView.moveItem(at: indexPath, to: IndexPath.init(row: viewModel.selectionCellModels.count - 1, section: 0))
+        viewModel.removePhoto(at: indexPath) { [weak self] sourceIndexPath in
+            guard let self else { return }
+            self.collectionView.reloadItems(at: [sourceIndexPath])
+        } willMoveCellTo: { [weak self] lastContunousImageCellIndexPath in
+            guard let self else { return }
+            self.collectionView.moveItem(at: indexPath, to: lastContunousImageCellIndexPath)
+            print(viewModel.selectionCellModels.map { $0.uid })
+            print("====")
+        }
     }
 }

@@ -13,7 +13,8 @@ struct SelectionViewCellModel {
         case haveSelectionPhoto
         case uploadSelectionPhoto
     }
-    
+    let uid: String
     var photo: UIImage?
 //    var state: State
+    
 }

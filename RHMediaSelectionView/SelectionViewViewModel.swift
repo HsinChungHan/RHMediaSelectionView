@@ -17,17 +17,19 @@ protocol SelectionViewViewModelDelegate: AnyObject {
 
 class SelectionViewViewModel {
     weak var delegate: SelectionViewViewModelDelegate?
-    let MAX_SELECTION_LIMIT = 9
+    
     var replacedIndex: Int? = nil
     var selectedImagesCount: Int {
         selectionCellModels.compactMap { $0.photo }.count
     }
-    var selectionCellModels = (1...9).map { _ in SelectionViewCellModel(photo: nil) }
-    var allowedSelectionLimit: Int {
-        MAX_SELECTION_LIMIT - selectedImagesCount
-    }
+    lazy var selectionCellModels = (1...maxSelectionLimit).map { SelectionViewCellModel(uid: "\($0)", photo: nil) }
+    var allowedSelectionLimit: Int { maxSelectionLimit - selectedImagesCount }
     
     lazy var photoPickerManagerUseCase = makePhotoPickerManagerUseCase()
+    let maxSelectionLimit: Int
+    init(maxSelectionLimit: Int) {
+        self.maxSelectionLimit = maxSelectionLimit
+    }
 }
 
 // MARK: - Internal
@@ -38,6 +40,29 @@ extension SelectionViewViewModel {
             return
         }
         addNewPhotos()
+    }
+    
+    func moveCell(at sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath, completion: (IndexPath) -> Void) {
+        let item = selectionCellModels.remove(at: sourceIndexPath.item)
+        let nextContinuousIndex = selectedImagesCount
+        let targetIndex = min(destinationIndexPath.row, nextContinuousIndex)
+        selectionCellModels.insert(item, at: targetIndex)
+        let shouldMoveCellToLastContinuousCellsIndex = destinationIndexPath.row > targetIndex
+        if shouldMoveCellToLastContinuousCellsIndex {
+            let lastContunousImageCellIndexPath = IndexPath(item: targetIndex, section: destinationIndexPath.section)
+            completion(lastContunousImageCellIndexPath)
+        }
+        
+    }
+    
+    func removePhoto(at indexPath: IndexPath, willReloadCellAt: (IndexPath) -> Void, willMoveCellTo: (IndexPath) -> Void) {
+        selectionCellModels[indexPath.row].photo = nil
+        willReloadCellAt(indexPath)
+        
+        let destinationIndexPath = IndexPath.init(row: maxSelectionLimit - 1, section: 0)
+        moveCell(at: indexPath, to: destinationIndexPath) { lastContunousImageCellIndexPath in
+            willMoveCellTo(lastContunousImageCellIndexPath)
+        }
     }
 }
 
