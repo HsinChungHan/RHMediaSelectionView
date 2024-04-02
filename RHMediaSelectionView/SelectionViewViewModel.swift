@@ -113,7 +113,7 @@ private extension SelectionViewViewModel {
             else {
                 return
             }
-            Thread.sleep(forTimeInterval: 1)
+            Thread.sleep(forTimeInterval: 3)
             
             
             DispatchQueue.main.async {
