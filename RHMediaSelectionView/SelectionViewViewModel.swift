@@ -107,9 +107,12 @@ private extension SelectionViewViewModel {
     }
     
     
-    func shouldUploadImage(at cellModelIndex: Int) {
-        concurrentQueue.async {
-            guard let imageData = self.selectionCellModels[cellModelIndex].photo?.compress()
+    func uploadImage(at cellModelIndex: Int) {
+        let cellID = self.selectionCellModels[cellModelIndex].uid
+        guard let image = self.selectionCellModels[cellModelIndex].photo else { return }
+        concurrentQueue.async { [weak self] in
+            guard let self else { return }
+            guard let imageData = image.compress()
             else {
                 return
             }
@@ -117,8 +120,9 @@ private extension SelectionViewViewModel {
             
             
             DispatchQueue.main.async {
-                self.selectionCellModels[cellModelIndex].isUploading = false
-                self.delegate?.selectionViewViewModel(self, didUpdateCellModelImageAt: cellModelIndex)
+                guard let itemIndex = self.selectionCellModels.firstIndex(where: { $0.uid == cellID }) else { return }
+                self.selectionCellModels[itemIndex].isUploading = false
+                self.delegate?.selectionViewViewModel(self, didUpdateCellModelImageAt: itemIndex)
             }
         }
         
@@ -156,7 +160,7 @@ extension SelectionViewViewModel: PhotoPickerManagerUseCaseDelegate {
         selectionCellModels[shouldReloadImageAtIndex].isUploading = true
         delegate?.selectionViewViewModel(self, shouldReloadImageAtIndex: shouldReloadImageAtIndex)
         
-        shouldUploadImage(at: shouldReloadImageAtIndex)
+        uploadImage(at: shouldReloadImageAtIndex)
         
         
         
