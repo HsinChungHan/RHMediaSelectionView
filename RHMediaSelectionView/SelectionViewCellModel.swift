@@ -8,13 +8,8 @@
 import UIKit
 
 struct SelectionViewCellModel {
-    enum State {
-        case noSelectionPhoto
-        case haveSelectionPhoto
-        case uploadSelectionPhoto
-    }
     let uid: String
     var photo: UIImage?
-//    var state: State
+    var isUploading: Bool = false
     
 }

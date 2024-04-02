@@ -34,4 +34,34 @@ extension UIImage {
     func compressImage(quality: CGFloat) -> Data? {
         return jpegData(compressionQuality: quality)
     }
+    
+    var fileSize: CGFloat? {
+        if let imageData = self.jpegData(compressionQuality: 1.0) {
+            let fileSize = CGFloat(CGFloat(imageData.count) / (1024.0 * 1024.0))
+            return fileSize
+        }
+        return nil
+    }
+    
+    func toData() -> Data? {
+        if let imageData = jpegData(compressionQuality: 1.0) {
+            return imageData
+        }
+        
+        if let imageData = pngData() {
+            return imageData
+        }
+        
+        return nil
+    }
+    
+    // 預設縮小為 1 MB 以下
+    func compress(lessThan size: CGFloat = 1) -> Data? {
+        guard let fileSize  else { return nil }
+        if fileSize <= size {
+            return toData()
+        }
+        let compressionQuality = size / fileSize
+        return jpegData(compressionQuality: compressionQuality)
+    }
 }

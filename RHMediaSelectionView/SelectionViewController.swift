@@ -98,6 +98,7 @@ extension SelectionViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CellID", for: indexPath) as! SelectionViewCell
         cell.setupImage(with: viewModel.selectionCellModels[indexPath.row].photo)
+        cell.setupIsUploadingPhoto(with: viewModel.selectionCellModels[indexPath.row].isUploading)
         cell.delegate = self
         return cell
     }
@@ -106,9 +107,10 @@ extension SelectionViewController: UICollectionViewDataSource {
 // MARK: - UICollectionViewDelegate
 extension SelectionViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
-        viewModel.moveCell(at: sourceIndexPath, to: destinationIndexPath) { lastContunousImageCellIndexPath in
+        viewModel.moveCell(at: sourceIndexPath, to: destinationIndexPath) { [weak self] lastContunousImageCellIndexPath in
+            guard let self else { return }
             collectionView.moveItem(at: destinationIndexPath, to: lastContunousImageCellIndexPath)
-            print(viewModel.selectionCellModels.map { $0.uid })
+            print(self.viewModel.selectionCellModels.map { $0.uid })
             print("====")
         }
     }
@@ -171,6 +173,12 @@ private extension SelectionViewController {
 }
 
 extension SelectionViewController: SelectionViewViewModelDelegate {
+    
+    func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, didUpdateCellModelImageAt itemIndex: Int) {
+        let indexPath = IndexPath(row: itemIndex, section: 0)
+        collectionView.reloadItems(at: [indexPath])
+    }
+    
     func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, shouldHideActivityIndicator: Bool) {
         hideActivityIndicator()
     }

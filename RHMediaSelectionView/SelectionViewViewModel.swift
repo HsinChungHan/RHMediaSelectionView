@@ -13,16 +13,45 @@ protocol SelectionViewViewModelDelegate: AnyObject {
     func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, shouldReloadImageAtIndex index: Int)
     func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, shouldShowActivityIndicator: Bool)
     func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, shouldHideActivityIndicator: Bool)
+    func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, didUpdateCellModelImageAt itemIndex: Int)
 }
 
 class SelectionViewViewModel {
     weak var delegate: SelectionViewViewModelDelegate?
+    let concurrentQueue = DispatchQueue.global()
+    let selectionModelQueue = DispatchQueue(label: "com.selectionModelQueue")
     
     var replacedIndex: Int? = nil
     var selectedImagesCount: Int {
         selectionCellModels.compactMap { $0.photo }.count
     }
-    lazy var selectionCellModels = (1...maxSelectionLimit).map { SelectionViewCellModel(uid: "\($0)", photo: nil) }
+    
+    lazy var selectionCellModels = (1...maxSelectionLimit).map { SelectionViewCellModel(uid: "\($0 - 1)", photo: nil) }
+
+//    var selectionCellModels: [SelectionViewCellModel] {
+//        get {
+//            concurrentQueue.sync {
+//                return _selectionCellModels
+//            }
+//        }
+//        
+//        set {
+//            concurrentQueue.async(flags: .barrier) { [weak self] in
+//                self?._selectionCellModels = newValue
+//            }
+//        }
+//    }
+//    
+    // 更新 _selectionCellModels 的函数，并提供完成回调
+//    func updateSelectionCellModels(_ newValue: [SelectionViewCellModel], completion: @escaping () -> Void) {
+//        concurrentQueue.async(flags: .barrier) {
+//            self._selectionCellModels = newValue
+//            DispatchQueue.main.async {
+//                completion()
+//            }
+//        }
+//    }
+    
     var allowedSelectionLimit: Int { maxSelectionLimit - selectedImagesCount }
     
     lazy var photoPickerManagerUseCase = makePhotoPickerManagerUseCase()
@@ -52,7 +81,6 @@ extension SelectionViewViewModel {
             let lastContunousImageCellIndexPath = IndexPath(item: targetIndex, section: destinationIndexPath.section)
             completion(lastContunousImageCellIndexPath)
         }
-        
     }
     
     func removePhoto(at indexPath: IndexPath, willReloadCellAt: (IndexPath) -> Void, willMoveCellTo: (IndexPath) -> Void) {
@@ -77,6 +105,24 @@ private extension SelectionViewViewModel {
         replacedIndex = index
         photoPickerManagerUseCase.presentPhotoPicker(with: 1)
     }
+    
+    
+    func shouldUploadImage(at cellModelIndex: Int) {
+        concurrentQueue.async {
+            guard let imageData = self.selectionCellModels[cellModelIndex].photo?.compress()
+            else {
+                return
+            }
+            Thread.sleep(forTimeInterval: 1)
+            
+            
+            DispatchQueue.main.async {
+                self.selectionCellModels[cellModelIndex].isUploading = false
+                self.delegate?.selectionViewViewModel(self, didUpdateCellModelImageAt: cellModelIndex)
+            }
+        }
+        
+    }
 }
 
 extension SelectionViewViewModel {
@@ -88,7 +134,8 @@ extension SelectionViewViewModel {
 }
 
 extension SelectionViewViewModel: PhotoPickerManagerUseCaseDelegate {
-    func photoPickerManager(_ photoPickerManager: PhotoPickerManagerUseCase, shouldPresentPikcer picker: PHPickerViewController) {
+    
+    nonisolated func photoPickerManager(_ photoPickerManager: PhotoPickerManagerUseCase, shouldPresentPikcer picker: PHPickerViewController) {
         delegate?.selectionViewViewModel(self, shouldPresentPikcer: picker)
     }
     
@@ -100,13 +147,18 @@ extension SelectionViewViewModel: PhotoPickerManagerUseCaseDelegate {
         var shouldReloadImageAtIndex: Int
         if let replacedIndex {
             shouldReloadImageAtIndex = replacedIndex
-            selectionCellModels[replacedIndex].photo = image
             self.replacedIndex = nil
         } else {
-            selectionCellModels[selectedImagesCount].photo = image
-            shouldReloadImageAtIndex = selectedImagesCount - 1
+            
+            shouldReloadImageAtIndex = max(selectedImagesCount, 0)
         }
+        selectionCellModels[shouldReloadImageAtIndex].photo = image
+        selectionCellModels[shouldReloadImageAtIndex].isUploading = true
         delegate?.selectionViewViewModel(self, shouldReloadImageAtIndex: shouldReloadImageAtIndex)
+        
+        shouldUploadImage(at: shouldReloadImageAtIndex)
+        
+        
         
         if isFinishLoading {
             delegate?.selectionViewViewModel(self, shouldHideActivityIndicator: true)
