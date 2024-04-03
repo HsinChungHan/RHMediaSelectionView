@@ -25,6 +25,7 @@
 		D1E152712BBA60F700795B7B /* PhotoPickerUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E152702BBA60F700795B7B /* PhotoPickerUseCase.swift */; };
 		D1E152732BBA7E7E00795B7B /* UIImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E152722BBA7E7E00795B7B /* UIImage+Extension.swift */; };
 		D1E152752BBB0DD000795B7B /* SelectionViewCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E152742BBB0DD000795B7B /* SelectionViewCellModel.swift */; };
+		D1E152772BBD14FF00795B7B /* CircularProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E152762BBD14FF00795B7B /* CircularProgressBar.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +65,7 @@
 		D1E152702BBA60F700795B7B /* PhotoPickerUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoPickerUseCase.swift; sourceTree = "<group>"; };
 		D1E152722BBA7E7E00795B7B /* UIImage+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extension.swift"; sourceTree = "<group>"; };
 		D1E152742BBB0DD000795B7B /* SelectionViewCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionViewCellModel.swift; sourceTree = "<group>"; };
+		D1E152762BBD14FF00795B7B /* CircularProgressBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularProgressBar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +124,7 @@
 				D1E152352BBA44F100795B7B /* ViewController.swift */,
 				D1E152612BBA452C00795B7B /* SelectionViewController.swift */,
 				D1E1526E2BBA607B00795B7B /* SelectionViewViewModel.swift */,
+				D1E152762BBD14FF00795B7B /* CircularProgressBar.swift */,
 				D1E152702BBA60F700795B7B /* PhotoPickerUseCase.swift */,
 				D1E1526C2BBA56AE00795B7B /* SelectionViewCell.swift */,
 				D1E152742BBB0DD000795B7B /* SelectionViewCellModel.swift */,
@@ -301,6 +304,7 @@
 				D1E152712BBA60F700795B7B /* PhotoPickerUseCase.swift in Sources */,
 				D1E1526F2BBA607B00795B7B /* SelectionViewViewModel.swift in Sources */,
 				D1E152342BBA44F100795B7B /* SceneDelegate.swift in Sources */,
+				D1E152772BBD14FF00795B7B /* CircularProgressBar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

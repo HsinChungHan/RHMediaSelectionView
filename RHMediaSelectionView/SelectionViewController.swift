@@ -32,7 +32,7 @@ class SelectionViewController: UIViewController {
         super.viewDidLoad()
         view.addSubview(collectionView)
         collectionView.fillSuperView()
-        collectionView.register(SelectionViewCell.self, forCellWithReuseIdentifier: "CellID")
+        collectionView.register(SelectionViewCell.self, forCellWithReuseIdentifier: String(describing: SelectionViewCell.self))
         collectionView.addGestureRecognizer(longPressGestureRecognizer)
     }
     
@@ -96,9 +96,9 @@ extension SelectionViewController: UICollectionViewDataSource {
     
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CellID", for: indexPath) as! SelectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: SelectionViewCell.self), for: indexPath) as! SelectionViewCell
         cell.setupImage(with: viewModel.selectionCellModels[indexPath.row].photo)
-        cell.setupIsUploadingPhoto(with: viewModel.selectionCellModels[indexPath.row].isUploading)
+        cell.setupIsUploadingPhoto(with: viewModel.selectionCellModels[indexPath.row].isUploadingImage)
         cell.delegate = self
         return cell
     }

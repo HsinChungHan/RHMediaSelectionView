@@ -10,6 +10,6 @@ import UIKit
 struct SelectionViewCellModel {
     let uid: String
     var photo: UIImage?
-    var isUploading: Bool = false
+    var isUploadingImage: Bool = false
     
 }

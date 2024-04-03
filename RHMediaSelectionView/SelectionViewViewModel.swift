@@ -42,7 +42,7 @@ class SelectionViewViewModel {
 //        }
 //    }
 //    
-    // 更新 _selectionCellModels 的函数，并提供完成回调
+    // 更新 selectionCellModels 的 setter，並提供完成回調
 //    func updateSelectionCellModels(_ newValue: [SelectionViewCellModel], completion: @escaping () -> Void) {
 //        concurrentQueue.async(flags: .barrier) {
 //            self._selectionCellModels = newValue
@@ -116,12 +116,13 @@ private extension SelectionViewViewModel {
             else {
                 return
             }
+            // TODO: - Remove in the future
             Thread.sleep(forTimeInterval: 3)
             
             
             DispatchQueue.main.async {
                 guard let itemIndex = self.selectionCellModels.firstIndex(where: { $0.uid == cellID }) else { return }
-                self.selectionCellModels[itemIndex].isUploading = false
+                self.selectionCellModels[itemIndex].isUploadingImage = false
                 self.delegate?.selectionViewViewModel(self, didUpdateCellModelImageAt: itemIndex)
             }
         }
@@ -147,22 +148,24 @@ extension SelectionViewViewModel: PhotoPickerManagerUseCaseDelegate {
         delegate?.selectionViewViewModel(self, shouldShowActivityIndicator: true)
     }
     
-    func photoPickerManager(_ photoPickerManager: PhotoPickerManagerUseCase, didLoadImage image: UIImage, isFinishLoading: Bool) {
+    private func makeReloadImageIndex() -> Int {
         var shouldReloadImageAtIndex: Int
         if let replacedIndex {
             shouldReloadImageAtIndex = replacedIndex
             self.replacedIndex = nil
         } else {
-            
             shouldReloadImageAtIndex = max(selectedImagesCount, 0)
         }
+        return shouldReloadImageAtIndex
+    }
+    
+    func photoPickerManager(_ photoPickerManager: PhotoPickerManagerUseCase, didLoadImage image: UIImage, isFinishLoading: Bool) {
+        let shouldReloadImageAtIndex = makeReloadImageIndex()
         selectionCellModels[shouldReloadImageAtIndex].photo = image
-        selectionCellModels[shouldReloadImageAtIndex].isUploading = true
+        selectionCellModels[shouldReloadImageAtIndex].isUploadingImage = true
         delegate?.selectionViewViewModel(self, shouldReloadImageAtIndex: shouldReloadImageAtIndex)
         
         uploadImage(at: shouldReloadImageAtIndex)
-        
-        
         
         if isFinishLoading {
             delegate?.selectionViewViewModel(self, shouldHideActivityIndicator: true)
