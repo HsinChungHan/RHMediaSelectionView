@@ -31,8 +31,8 @@ extension CircularProgressBar {
         
         // track layer
         trackLayer.path = circlePath.cgPath
-        trackLayer.fillColor = Color.Neutral.v700.withAlphaComponent(0.3).cgColor
-        trackLayer.strokeColor = Color.Red.v100.cgColor
+        trackLayer.fillColor = UIColor.clear.cgColor
+        trackLayer.strokeColor = Color.Red.v100.withAlphaComponent(0.5).cgColor
         trackLayer.lineWidth = 10.0
         trackLayer.strokeEnd = 1.0
         layer.addSublayer(trackLayer)
@@ -40,7 +40,7 @@ extension CircularProgressBar {
         // progress layer
         progressLayer.lineCap = .round
         progressLayer.path = circlePath.cgPath
-        progressLayer.fillColor = Color.Neutral.v700.withAlphaComponent(0.3).cgColor
+        progressLayer.fillColor = UIColor.clear.cgColor
         progressLayer.strokeColor = Color.Red.v500.cgColor
         progressLayer.lineWidth = 10.0
         progressLayer.strokeStart = 0.0
