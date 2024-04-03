@@ -23,6 +23,8 @@ class SelectionViewCell: UICollectionViewCell {
     lazy var imageView = makeImageView()
     lazy var removeButton = makeRemoveButton()
     lazy var lightGrayMaskView = makeMaskView()
+    lazy var circularProgressBar = makeCircularProgrssBar()
+
     var status = Status.noSelectionPhoto
     
     var isUploadingPhoto: Bool = false {
@@ -58,7 +60,9 @@ extension SelectionViewCell {
         removeButton.layer.cornerRadius = 24 / 2
         removeButton.clipsToBounds = true
         lightGrayMaskView.fillSuperView()
-        
+        lightGrayMaskView.addSubview(circularProgressBar)
+        circularProgressBar.constraint(centerX: lightGrayMaskView.snp.centerX, centerY: lightGrayMaskView.snp.centerY, size: .init(width: 40, height: 40))
+        layoutIfNeeded()
     }
 }
 
@@ -75,6 +79,10 @@ extension SelectionViewCell {
     
     func setupIsUploadingPhoto(with isUploadingPhoto: Bool) {
         self.isUploadingPhoto = isUploadingPhoto
+    }
+    
+    func setProgressWithAnimationFromCurrentValue(value: Float) {
+        circularProgressBar.setProgressWithAnimationFromCurrentValue(value: value)
     }
 }
 
@@ -108,4 +116,10 @@ private extension SelectionViewCell {
         view.isHidden = true
         return view
     }
+    
+    func makeCircularProgrssBar() -> CircularProgressBar {
+        let view = CircularProgressBar()
+        return view
+    }
+
 }
