@@ -8,12 +8,23 @@
 import UIKit
 import RHUIComponent
 
+protocol CircularProgressBarDelegate: AnyObject {
+    func progressBar(_ progressBar: CircularProgressBar, didFinishProgress: Bool)
+}
+
 class CircularProgressBar: UIView {
+    weak var delegate: CircularProgressBarDelegate?
+    
     private var progressLayer = CAShapeLayer()
     private var trackLayer = CAShapeLayer()
     private lazy var progressLabel = makeProgressLabel()
     private var displayLink: CADisplayLink?
-
+    
+    private var progress: Float = 0
+    private var isFinishProgress: Bool {
+        progress == 1.0
+    }
+    
     override func draw(_ rect: CGRect) {
         super.draw(rect)
         makeCircularPath()
@@ -72,7 +83,7 @@ private extension CircularProgressBar {
 
     @objc func updateProgressLabel() {
         let currentValue = progressLayer.presentation()?.strokeEnd ?? 0
-        progressLabel.text = "\(Int(currentValue * 100)) %"
+        progressLabel.text = "\(Int(min(currentValue * 100 + 1, 100))) %"
     }
     
     func stopDisplayLink() {
@@ -84,6 +95,7 @@ private extension CircularProgressBar {
 // MARK: Internal Methods
 extension CircularProgressBar {
     func setProgressWithAnimation(duration: TimeInterval, value: Float) {
+        progress = value
         let animation = CABasicAnimation(keyPath: "strokeEnd")
         animation.delegate = self
         animation.duration = duration
@@ -96,7 +108,8 @@ extension CircularProgressBar {
         progressLayer.add(animation, forKey: "animateprogress")
     }
     
-    func setProgressWithAnimationFromCurrentValue(duration: TimeInterval=1.0, value: Float) {
+    func setProgressWithAnimationFromCurrentValue(duration: TimeInterval=0.1, value: Float) {
+        progress = value
         let animation = CABasicAnimation(keyPath: "strokeEnd")
         animation.delegate = self
         animation.duration = duration
@@ -109,6 +122,21 @@ extension CircularProgressBar {
         animation.isRemovedOnCompletion = false
         progressLayer.add(animation, forKey: "animateprogress")
     }
+    
+    func reset() {
+        // 停止 displayLink 和动画
+        stopDisplayLink()
+        progressLayer.removeAllAnimations()
+        
+        // 重置 progressLayer 和 label
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        progressLayer.strokeEnd = 0.0
+        CATransaction.commit()
+        
+        progressLabel.text = "0 %"
+        progress = 0.0
+    }
 }
 
 extension CircularProgressBar: CAAnimationDelegate {
@@ -118,7 +146,10 @@ extension CircularProgressBar: CAAnimationDelegate {
     
     func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
         stopDisplayLink()
-        // 確保結束時顯示正確的結束值
-//        progressLabel.text = "\(Int((progressLayer.strokeEnd) * 100)) %"
+        if flag {
+            delegate?.progressBar(self, didFinishProgress: isFinishProgress)
+        }
     }
 }
+
+

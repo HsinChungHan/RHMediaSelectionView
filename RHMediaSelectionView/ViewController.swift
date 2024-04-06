@@ -29,7 +29,7 @@ class ViewController: UIViewController {
 extension ViewController {
     func makeReloadButton() -> UIButton {
         let button = UIButton(type: .system)
-        button.setTitle("Reload buttons", for: .normal)
+        button.setTitle("Reload CollectionView", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .black
         button.titleLabel?.font = .boldSystemFont(ofSize: 18)

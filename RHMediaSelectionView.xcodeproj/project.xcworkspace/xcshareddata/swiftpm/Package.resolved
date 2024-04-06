@@ -15,7 +15,7 @@
       "location" : "https://github.com/HsinChungHan/RHNetwork.git",
       "state" : {
         "branch" : "main",
-        "revision" : "d0e653227670d9025681ab400fabd19ea7f3f4b6"
+        "revision" : "3c978ce1d7ded82fcbcf9d40dd72893e48c476f2"
       }
     },
     {
@@ -24,7 +24,7 @@
       "location" : "https://github.com/HsinChungHan/RHNetworkAPI.git",
       "state" : {
         "branch" : "main",
-        "revision" : "7ca45548f78575e9717866f88d81736a9ee912cb"
+        "revision" : "46feda0cda105e94a34013f31bb2ed58753b7614"
       }
     },
     {

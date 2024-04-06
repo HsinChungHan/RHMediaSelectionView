@@ -13,7 +13,10 @@ protocol SelectionViewViewModelDelegate: AnyObject {
     func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, shouldReloadImageAtIndex index: Int)
     func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, shouldShowActivityIndicator: Bool)
     func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, shouldHideActivityIndicator: Bool)
-    func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, didUpdateCellModelImageAt itemIndex: Int)
+    func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, didFinishUploadingImageAt cellModelIndex: Int)
+    
+    func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, isUploadingImageAt cellModelIndex: Int, withProgress progress: Float)
+    
 }
 
 class SelectionViewViewModel {
@@ -27,30 +30,6 @@ class SelectionViewViewModel {
     }
     
     lazy var selectionCellModels = (1...maxSelectionLimit).map { SelectionViewCellModel(uid: "\($0 - 1)", photo: nil) }
-
-//    var selectionCellModels: [SelectionViewCellModel] {
-//        get {
-//            concurrentQueue.sync {
-//                return _selectionCellModels
-//            }
-//        }
-//        
-//        set {
-//            concurrentQueue.async(flags: .barrier) { [weak self] in
-//                self?._selectionCellModels = newValue
-//            }
-//        }
-//    }
-//    
-    // 更新 selectionCellModels 的 setter，並提供完成回調
-//    func updateSelectionCellModels(_ newValue: [SelectionViewCellModel], completion: @escaping () -> Void) {
-//        concurrentQueue.async(flags: .barrier) {
-//            self._selectionCellModels = newValue
-//            DispatchQueue.main.async {
-//                completion()
-//            }
-//        }
-//    }
     
     var allowedSelectionLimit: Int { maxSelectionLimit - selectedImagesCount }
     
@@ -64,6 +43,9 @@ class SelectionViewViewModel {
 // MARK: - Internal
 extension SelectionViewViewModel {
     func selectPhoto(atIndex index: Int) {
+        if selectionCellModels[index].isUploadingImage {
+            return 
+        }
         if index <= selectedImagesCount - 1 {
             replacePhoto(atIndex: index)
             return
@@ -76,7 +58,7 @@ extension SelectionViewViewModel {
         let nextContinuousIndex = selectedImagesCount
         let targetIndex = min(destinationIndexPath.row, nextContinuousIndex)
         selectionCellModels.insert(item, at: targetIndex)
-        let shouldMoveCellToLastContinuousCellsIndex = destinationIndexPath.row > targetIndex
+        let shouldMoveCellToLastContinuousCellsIndex = destinationIndexPath.row >= targetIndex
         if shouldMoveCellToLastContinuousCellsIndex {
             let lastContunousImageCellIndexPath = IndexPath(item: targetIndex, section: destinationIndexPath.section)
             completion(lastContunousImageCellIndexPath)
@@ -92,6 +74,12 @@ extension SelectionViewViewModel {
             willMoveCellTo(lastContunousImageCellIndexPath)
         }
     }
+    
+    func didFinishUploadingImage(with cellID: String) {
+        guard let itemIndex = findCellModelIndex(with: cellID) else { return }
+        self.selectionCellModels[itemIndex].isUploadingImage = false
+        self.delegate?.selectionViewViewModel(self, didFinishUploadingImageAt: itemIndex)
+    }
 }
 
 // MARK: - Helpers
@@ -106,27 +94,32 @@ private extension SelectionViewViewModel {
         photoPickerManagerUseCase.presentPhotoPicker(with: 1)
     }
     
-    
     func uploadImage(at cellModelIndex: Int) {
         let cellID = self.selectionCellModels[cellModelIndex].uid
         guard let image = self.selectionCellModels[cellModelIndex].photo else { return }
         concurrentQueue.async { [weak self] in
             guard let self else { return }
-            guard let imageData = image.compress()
-            else {
-                return
-            }
-            // TODO: - Remove in the future
-            Thread.sleep(forTimeInterval: 3)
-            
-            
-            DispatchQueue.main.async {
-                guard let itemIndex = self.selectionCellModels.firstIndex(where: { $0.uid == cellID }) else { return }
-                self.selectionCellModels[itemIndex].isUploadingImage = false
-                self.delegate?.selectionViewViewModel(self, didUpdateCellModelImageAt: itemIndex)
+            guard let imageData = image.compress() else { return }
+            let imgUrUploader = ImgUrUploader()
+            imgUrUploader.uploadImageToImgur(imageData: imageData, taskID: cellID) { [weak self] progrss in
+                guard let self else { return }
+                DispatchQueue.main.async {
+                    self.isUploadingImage(with: cellID, progress: progrss)
+                }
             }
         }
-        
+    }
+    
+    private func isUploadingImage(with cellID: String, progress: Float) {
+        guard let itemIndex = findCellModelIndex(with: cellID) else { return }
+        delegate?.selectionViewViewModel(self, isUploadingImageAt: itemIndex, withProgress: progress)
+    }
+    
+    
+    
+    private func findCellModelIndex(with cellID: String) -> Int? {
+        guard let itemIndex = self.selectionCellModels.firstIndex(where: { $0.uid == cellID }) else { return nil }
+        return itemIndex
     }
 }
 

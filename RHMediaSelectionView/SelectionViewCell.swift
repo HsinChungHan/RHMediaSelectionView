@@ -11,6 +11,8 @@ import UIKit
 
 protocol SelectionViewCellDelegate: AnyObject {
     func selectionViewCell(_ selectionViewCell: SelectionViewCell, didTapRemoveButton button: UIButton)
+    
+    func selectionViewCell(_ selectionViewCell: SelectionViewCell, atCurrentSelectionCellModel modelID: String, didFinishProgress: Bool)
 }
 
 class SelectionViewCell: UICollectionViewCell {
@@ -43,6 +45,8 @@ class SelectionViewCell: UICollectionViewCell {
             }
         }
     }
+    
+    var currentSelectionCellModelID: String? = nil
     
     override func draw(_ rect: CGRect) {
         super.draw(rect)
@@ -84,6 +88,14 @@ extension SelectionViewCell {
     func setProgressWithAnimationFromCurrentValue(value: Float) {
         circularProgressBar.setProgressWithAnimationFromCurrentValue(value: value)
     }
+    
+    func resetProgressBar() {
+        circularProgressBar.reset()
+    }
+    
+    func setupCurrentSelectionCellModelID(with modelID: String) {
+        self.currentSelectionCellModelID = modelID
+    }
 }
 
 // MARK: - Factory Methods
@@ -92,6 +104,7 @@ private extension SelectionViewCell {
         let view = UIImageView()
         view.contentMode = .scaleAspectFill
         view.image = UIImage(named: "photo")
+        view.layer.cornerRadius = 5.0
         view.clipsToBounds = true
         return view
     }
@@ -119,7 +132,15 @@ private extension SelectionViewCell {
     
     func makeCircularProgrssBar() -> CircularProgressBar {
         let view = CircularProgressBar()
+        view.delegate = self
         return view
     }
 
+}
+
+extension SelectionViewCell: CircularProgressBarDelegate {
+    func progressBar(_ progressBar: CircularProgressBar, didFinishProgress: Bool) {
+        guard let currentSelectionCellModelID else { return }
+        delegate?.selectionViewCell(self, atCurrentSelectionCellModel: currentSelectionCellModelID, didFinishProgress: didFinishProgress)
+    }
 }

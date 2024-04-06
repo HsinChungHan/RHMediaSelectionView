@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D1658CD32BBFA11300FC338C /* ImageUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1658CD22BBFA11300FC338C /* ImageUploader.swift */; };
 		D1E152322BBA44F100795B7B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E152312BBA44F100795B7B /* AppDelegate.swift */; };
 		D1E152342BBA44F100795B7B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E152332BBA44F100795B7B /* SceneDelegate.swift */; };
 		D1E152362BBA44F100795B7B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1E152352BBA44F100795B7B /* ViewController.swift */; };
@@ -46,6 +47,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D1658CD22BBFA11300FC338C /* ImageUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageUploader.swift; sourceTree = "<group>"; };
 		D1E1522E2BBA44F100795B7B /* RHMediaSelectionView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RHMediaSelectionView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1E152312BBA44F100795B7B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D1E152332BBA44F100795B7B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -124,6 +126,7 @@
 				D1E152352BBA44F100795B7B /* ViewController.swift */,
 				D1E152612BBA452C00795B7B /* SelectionViewController.swift */,
 				D1E1526E2BBA607B00795B7B /* SelectionViewViewModel.swift */,
+				D1658CD22BBFA11300FC338C /* ImageUploader.swift */,
 				D1E152762BBD14FF00795B7B /* CircularProgressBar.swift */,
 				D1E152702BBA60F700795B7B /* PhotoPickerUseCase.swift */,
 				D1E1526C2BBA56AE00795B7B /* SelectionViewCell.swift */,
@@ -298,6 +301,7 @@
 				D1E1526D2BBA56AE00795B7B /* SelectionViewCell.swift in Sources */,
 				D1E152362BBA44F100795B7B /* ViewController.swift in Sources */,
 				D1E152622BBA452C00795B7B /* SelectionViewController.swift in Sources */,
+				D1658CD32BBFA11300FC338C /* ImageUploader.swift in Sources */,
 				D1E152732BBA7E7E00795B7B /* UIImage+Extension.swift in Sources */,
 				D1E152322BBA44F100795B7B /* AppDelegate.swift in Sources */,
 				D1E152752BBB0DD000795B7B /* SelectionViewCellModel.swift in Sources */,

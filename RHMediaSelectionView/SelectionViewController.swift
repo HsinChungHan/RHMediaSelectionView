@@ -97,8 +97,10 @@ extension SelectionViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: SelectionViewCell.self), for: indexPath) as! SelectionViewCell
-        cell.setupImage(with: viewModel.selectionCellModels[indexPath.row].photo)
-        cell.setupIsUploadingPhoto(with: viewModel.selectionCellModels[indexPath.row].isUploadingImage)
+        let selectionCellModel = viewModel.selectionCellModels[indexPath.row]
+        cell.setupImage(with: selectionCellModel.photo)
+        cell.setupIsUploadingPhoto(with: selectionCellModel.isUploadingImage)
+        cell.setupCurrentSelectionCellModelID(with: selectionCellModel.uid)
         cell.delegate = self
         return cell
     }
@@ -173,10 +175,24 @@ private extension SelectionViewController {
 }
 
 extension SelectionViewController: SelectionViewViewModelDelegate {
+    func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, isUploadingImageAt cellModelIndex: Int, withProgress progress: Float) {
+        let indexPath = IndexPath(row: cellModelIndex, section: 0)
+        let cell = collectionView.cellForItem(at: indexPath) as! SelectionViewCell
+        cell.setProgressWithAnimationFromCurrentValue(value: progress)
+    }
     
-    func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, didUpdateCellModelImageAt itemIndex: Int) {
+    
+    func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, didFinishUploadingImageAt itemIndex: Int) {
         let indexPath = IndexPath(row: itemIndex, section: 0)
-        collectionView.reloadItems(at: [indexPath])
+        let cell = collectionView.cellForItem(at: indexPath) as! SelectionViewCell
+        collectionView.performBatchUpdates({ [weak self] in
+            guard let self else { return }
+            self.collectionView.reloadItems(at: [indexPath])
+        }) { finished in
+            if finished {
+                cell.resetProgressBar()
+            }
+        }
     }
     
     func selectionViewViewModel(_ selectionViewViewModel: SelectionViewViewModel, shouldHideActivityIndicator: Bool) {
@@ -198,6 +214,11 @@ extension SelectionViewController: SelectionViewViewModelDelegate {
 }
 
 extension SelectionViewController: SelectionViewCellDelegate {
+    func selectionViewCell(_ selectionViewCell: SelectionViewCell, atCurrentSelectionCellModel modelID: String, didFinishProgress: Bool) {
+        if !didFinishProgress { return }
+        viewModel.didFinishUploadingImage(with: modelID)
+    }
+    
     func selectionViewCell(_ selectionViewCell: SelectionViewCell, didTapRemoveButton button: UIButton) {
         guard let indexPath = collectionView.indexPath(for: selectionViewCell) else { return }
         viewModel.removePhoto(at: indexPath) { [weak self] sourceIndexPath in
